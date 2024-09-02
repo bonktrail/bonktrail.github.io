@@ -2,9 +2,12 @@ const dino = document.getElementById('dino');
 const gameContainer = document.querySelector('.game-container');
 const scoreboard = document.getElementById('scoreboard');
 const timerDisplay = document.getElementById('timer');
+const livesDisplay = document.getElementById('lives');
+const gameOverScreen = document.getElementById('game-over');
 let isJumping = false;
 let score = 0;
 let time = 0;
+let lives = 3;
 let isInvincible = false;
 let gameInterval;
 let obstacleInterval;
@@ -77,8 +80,9 @@ function createObstacle() {
         obstacle.style.left = `${obstacle.offsetLeft - 5}px`;
 
         if (!isInvincible && checkCollision(dino, obstacle)) {
-            endGame();
+            obstacle.remove();
             clearInterval(obstacleMoveInterval);
+            loseLife();
         }
 
         // Remove obstacle if it goes off-screen
@@ -137,6 +141,21 @@ function updateTimer() {
     timerDisplay.textContent = `Time: ${time}s`;
 }
 
+// Function to update lives
+function updateLives() {
+    livesDisplay.textContent = `Lives: ${lives}`;
+}
+
+// Function to handle losing a life
+function loseLife() {
+    lives--;
+    updateLives();
+
+    if (lives <= 0) {
+        endGame();
+    }
+}
+
 // Function to check collision between dino and another object (token, obstacle, or power-up)
 function checkCollision(dino, object) {
     const dinoRect = dino.getBoundingClientRect();
@@ -156,11 +175,31 @@ function endGame() {
     clearInterval(obstacleInterval);
     clearInterval(timerInterval);
     clearInterval(powerupInterval);
-    alert(`Game Over! Your final score is ${score} and you survived for ${time} seconds.`);
-    location.reload();  // Reload the game
+    gameOverScreen.style.display = 'block';  // Show game over screen
 }
 
-// Generate tokens, obstacles, and power-ups at regular intervals
+// Function to restart the game
+function restartGame() {
+    score = 0;
+    time = 0;
+    lives = 3;
+    isInvincible = false;
+    updateScore();
+    updateTimer();
+    updateLives();
+    gameOverScreen.style.display = 'none';  // Hide game over screen
+
+    // Restart the game intervals
+    gameInterval = setInterval(createToken, 2000);
+    obstacleInterval = setInterval(createObstacle, 3000);
+    powerupInterval = setInterval(createPowerUp, 10000);  // Power-up appears every 10 seconds
+    timerInterval = setInterval(updateTimer, 1000);  // Update timer every second
+}
+
+// Initialize the game
+updateScore();
+updateTimer();
+updateLives();
 gameInterval = setInterval(createToken, 2000);
 obstacleInterval = setInterval(createObstacle, 3000);
 powerupInterval = setInterval(createPowerUp, 10000);  // Power-up appears every 10 seconds
