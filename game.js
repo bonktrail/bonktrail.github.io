@@ -1,9 +1,12 @@
 const dino = document.getElementById('dino');
+const jumpSound = document.getElementById('jump-sound');  // Get the audio element
+let isRunning = false;
 const gameContainer = document.querySelector('.game-container');
 const scoreboard = document.getElementById('scoreboard');
 const timerDisplay = document.getElementById('timer');
 const livesDisplay = document.getElementById('lives');
 const gameOverScreen = document.getElementById('game-over');
+const warningSign = document.getElementById('warning-sign');
 let isJumping = false;
 let score = 0;
 let time = 0;
@@ -19,10 +22,28 @@ const ground = document.createElement('div');
 ground.classList.add('ground');
 gameContainer.appendChild(ground);
 
+function startRunning() {
+    if (!isRunning) {
+        dino.classList.add('running');
+        isRunning = true;
+    }
+}
+
+function stopRunning() {
+    dino.classList.remove('running');
+    isRunning = false;
+}
+
+
 // Function to make the dino jump
 function jump() {
     if (isJumping) return;
     isJumping = true;
+    stopRunning(); // Stop running animation during jump
+
+    // Play the jump sound
+    jumpSound.currentTime = 0;  // Reset to the beginning in case it was already playing
+    jumpSound.play();
     let upInterval = setInterval(() => {
         if (dino.offsetTop <= 150) {
             clearInterval(upInterval);
@@ -71,8 +92,17 @@ function createToken() {
 function createObstacle() {
     const obstacle = document.createElement('div');
     const obstacleType = Math.floor(Math.random() * 3) + 1;
+
     obstacle.classList.add('obstacle', `obstacle-${obstacleType}`);
     obstacle.style.left = `${gameContainer.offsetWidth}px`;  // Start off-screen on the right
+
+    // Only place obstacle-2 in the air
+    if (obstacleType === 2) {
+        obstacle.style.bottom = '150px'; // Adjust this value to control height
+    } else {
+        obstacle.style.bottom = '0';
+    }
+
     gameContainer.appendChild(obstacle);
 
     // Move the obstacle to the left to simulate the scrolling effect
@@ -130,33 +160,35 @@ function activatePowerUp() {
     }, 20000);  // 20 seconds of invincibility
 }
 
-// Function to update the scoreboard
-function updateScore() {
-    scoreboard.textContent = `Score: ${score}`;
-}
-
-// Function to update the timer
-function updateTimer() {
-    time++;
-    timerDisplay.textContent = `Time: ${time}s`;
-}
-
-// Function to update lives
-function updateLives() {
-    livesDisplay.textContent = `Lives: ${lives}`;
-}
-
-// Function to handle losing a life
+// Function to lose a life
 function loseLife() {
+    console.log(`Score for life ${4 - lives}: ${score}`);  // Log the score
     lives--;
     updateLives();
+    showWarningSign(lives);
 
     if (lives <= 0) {
         endGame();
     }
 }
 
-// Function to check collision between dino and another object (token, obstacle, or power-up)
+// Function to update the score display
+function updateScore() {
+    scoreboard.textContent = `Score: ${score}`;
+}
+
+// Function to update the timer display
+function updateTimer() {
+    time++;
+    timerDisplay.textContent = `Time: ${time}s`;
+}
+
+// Function to update the lives display
+function updateLives() {
+    livesDisplay.textContent = `Lives: ${lives}`;
+}
+
+// Function to check for collision between dino and another object (token, obstacle, or power-up)
 function checkCollision(dino, object) {
     const dinoRect = dino.getBoundingClientRect();
     const objectRect = object.getBoundingClientRect();
@@ -167,6 +199,15 @@ function checkCollision(dino, object) {
         dinoRect.right < objectRect.left ||
         dinoRect.left > objectRect.right
     );
+}
+
+// Function to show the warning sign
+function showWarningSign(livesLeft) {
+    warningSign.textContent = `Lives Left: ${livesLeft}`;
+    warningSign.style.display = 'block';
+    setTimeout(() => {
+        warningSign.style.display = 'none';
+    }, 2000);  // Show the warning sign for 2 seconds
 }
 
 // Function to end the game

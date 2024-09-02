@@ -12,6 +12,24 @@
             overflow: hidden;
             background-color: #e0f7fa;
         }
+        .character {
+    width: 64px; /* Width of a single frame */
+    height: 64px; /* Height of a single frame */
+    background-image: url('/images/giphy.png'); /* Path to sprite sheet */
+    background-repeat: no-repeat;
+    position: absolute;
+    bottom: 0;
+    left: 50px;
+}
+
+@keyframes run-animation {
+    from { background-position: 0px; }
+    to { background-position: -256px; } /* Adjust based on sprite sheet width */
+}
+
+.running {
+    animation: run-animation 0.5s steps(4) infinite; /* Adjust speed and steps based on the number of frames */
+}
         .game-container {
             position: relative;
             width: 100%;
@@ -102,6 +120,19 @@
             cursor: pointer;
             margin-top: 20px;
         }
+        .warning-sign {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background-color: yellow;
+            border: 5px solid red;
+            font-size: 36px;
+            font-weight: bold;
+            color: #333;
+            display: none;
+        }
         @keyframes ground-move {
             0% {
                 transform: translateX(0);
@@ -113,15 +144,17 @@
     </style>
 </head>
 <body>
+    <audio id="jump-sound" src="/sounds/jump.wav"></audio>
     <div class="game-container">
         <div id="scoreboard" class="scoreboard">Score: 0</div>
         <div id="timer" class="timer">Time: 0s</div>
         <div id="lives" class="lives">Lives: 3</div>
-        <div id="dino" class="dino"></div>
+        <div id="dino" class="character"></div>
         <div id="game-over" class="game-over">
             <h1>Game Over!</h1>
             <button onclick="restartGame()">Play Again</button>
         </div>
+        <div id="warning-sign" class="warning-sign">Lives Left: 3</div>
     </div>
     <script src="game.js"></script>
 </body>
