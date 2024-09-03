@@ -74,8 +74,11 @@ function createToken() {
         token.style.left = `${token.offsetLeft - 5}px`;
 
         if (checkCollision(dino, token)) {
+            const coinSound = document.getElementById('coin-sound');  // Get the audio element
             token.remove();
             score++;
+            coinSound.currentTime = 0;  // Reset to the beginning in case it was already playing
+            coinSound.play();
             updateScore();
             clearInterval(tokenMoveInterval);
         }
@@ -153,7 +156,9 @@ function createPowerUp() {
 function activatePowerUp() {
     isInvincible = true;
     dino.style.backgroundColor = '#ffeb3b';  // Change dino color to indicate invincibility
-
+    const levelupwav = document.getElementById('levelup-sound');  // Get the audio element
+    levelupwav.currentTime = 0;  // Reset to the beginning in case it was already playing
+    levelupwav.play();
     setTimeout(() => {
         isInvincible = false;
         dino.style.backgroundColor = '#333';  // Revert dino color back to normal
@@ -168,6 +173,9 @@ function loseLife() {
     showWarningSign(lives);
 
     if (lives <= 0) {
+        const losingwav = document.getElementById('losing-sound');  // Get the audio element
+        losingwav.currentTime = 0;  // Reset to the beginning in case it was already playing
+        losingwav.play();
         endGame();
     }
 }
