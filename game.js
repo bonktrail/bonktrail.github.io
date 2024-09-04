@@ -24,6 +24,9 @@ gameContainer.appendChild(ground);
 
 function startRunning() {
     if (!isRunning) {
+        dino.style.animationName = 'none'; // Reset animation
+        dino.offsetHeight; // Trigger reflow
+        dino.style.animationName = 'run-animation'; // Start the actual animation
         dino.classList.add('running');
         isRunning = true;
     }
@@ -34,7 +37,7 @@ function stopRunning() {
     isRunning = false;
 }
 
-
+startRunning();
 // Function to make the dino jump
 function jump() {
     if (isJumping) return;
