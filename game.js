@@ -24,10 +24,11 @@ gameContainer.appendChild(ground);
 
 function startRunning() {
     if (!isRunning) {
+        console.log("Starting run animation"); // Debug log
         dino.style.animationName = 'none'; // Reset animation
         dino.offsetHeight; // Trigger reflow
         dino.style.animationName = 'run-animation'; // Start the actual animation
-        dino.classList.add('running');
+        dino.classList.add('running'); // Add running class
         isRunning = true;
     }
 }
@@ -54,6 +55,8 @@ function jump() {
                 if (dino.offsetTop >= gameContainer.offsetHeight - dino.offsetHeight) {
                     clearInterval(downInterval);
                     isJumping = false;
+                    startRunning(); // Call startRunning at the end of the jump
+             
                 } else {
                     dino.style.top = dino.offsetTop + 5 + 'px';
                 }
@@ -164,7 +167,7 @@ function activatePowerUp() {
     levelupwav.play();
     setTimeout(() => {
         isInvincible = false;
-        dino.style.backgroundColor = '#333';  // Revert dino color back to normal
+        dino.style.backgroundColor = 'transparent';   // Revert dino color back to normal
     }, 20000);  // 20 seconds of invincibility
 }
 
